@@ -1,0 +1,990 @@
+MPASM 5.77  /USERS/GABRIELMILLER/MICROCHIPPR   6-5-2018  8:55:53         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001 ;*******************************************************************************
+                      00002 ;                                                                              *
+                      00003 ;    Microchip licenses this software to you solely for use with Microchip     *
+                      00004 ;    products. The software is owned by Microchip and/or its licensors, and is *
+                      00005 ;    protected under applicable copyright laws.  All rights reserved.          *
+                      00006 ;                                                                              *
+                      00007 ;    This software and any accompanying information is for suggestion only.    *
+                      00008 ;    It shall not be deemed to modify Microchip?s standard warranty for its    *
+                      00009 ;    products.  It is your responsibility to ensure that this software meets   *
+                      00010 ;    your requirements.                                                        *
+                      00011 ;                                                                              *
+                      00012 ;    SOFTWARE IS PROVIDED "AS IS".  MICROCHIP AND ITS LICENSORS EXPRESSLY      *
+                      00013 ;    DISCLAIM ANY WARRANTY OF ANY KIND, WHETHER EXPRESS OR IMPLIED, INCLUDING  *
+                      00014 ;    BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS    *
+                      00015 ;    FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT. IN NO EVENT SHALL          *
+                      00016 ;    MICROCHIP OR ITS LICENSORS BE LIABLE FOR ANY INCIDENTAL, SPECIAL,         *
+                      00017 ;    INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, HARM TO     *
+                      00018 ;    YOUR EQUIPMENT, COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR    *
+                      00019 ;    SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT LIMITED TO ANY   *
+                      00020 ;    DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR CONTRIBUTION, OR OTHER      *
+                      00021 ;    SIMILAR COSTS.                                                            *
+                      00022 ;                                                                              *
+                      00023 ;    To the fullest extend allowed by law, Microchip and its licensors         *
+                      00024 ;    liability shall not exceed the amount of fee, if any, that you have paid  *
+                      00025 ;    directly to Microchip to use this software.                               *
+                      00026 ;                                                                              *
+                      00027 ;    MICROCHIP PROVIDES THIS SOFTWARE CONDITIONALLY UPON YOUR ACCEPTANCE OF    *
+                      00028 ;    THESE TERMS.                                                              *
+                      00029 ;                                                                              *
+                      00030 ;*******************************************************************************
+                      00031 ;                                                                              *
+                      00032 ;    Filename: SimonSays.asm                                                                 *
+                      00033 ;    Date: 4/20/18                                                                    *
+                      00034 ;    File Version: 0.1                                                             *
+                      00035 ;    Author: Gabriel Miller                                                                   *
+                      00036 ;    Company:                                                                  *
+                      00037 ;    Description:                                                              *
+                      00038 ;                                                                              *
+                      00039 ;*******************************************************************************
+                      00040 ;                                                                              *
+                      00041 ;    Notes: In the MPLAB X Help, refer to the MPASM Assembler documentation    *
+                      00042 ;    for information on assembly instructions.                                 *
+                      00043 ;                                                                              *
+                      00044 ;*******************************************************************************
+                      00045 ;                                                                              *
+                      00046 ;    Known Issues: This template is designed for relocatable code.  As such,   *
+                      00047 ;    build errors such as "Directive only allowed when generating an object    *
+                      00048 ;    file" will result when the 'Build in Absolute Mode' checkbox is selected  *
+                      00049 ;    in the project properties.  Designing code in absolute mode is            *
+                      00050 ;    antiquated - use relocatable mode.                                        *
+                      00051 ;                                                                              *
+                      00052 ;*******************************************************************************
+                      00053 ;                                                                              *
+MPASM 5.77  /USERS/GABRIELMILLER/MICROCHIPPR   6-5-2018  8:55:53         PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00054 ;    Revision History:                                                         *
+                      00055 ;                                                                              *
+                      00056 ;*******************************************************************************
+                      00057 
+                      00058 
+                      00059 
+                      00060 ;*******************************************************************************
+                      00061 ; Processor Inclusion
+                      00062 ;*******************************************************************************
+                      00063 
+Warning[205]: Found directive in column 1. (list)
+                      00064 list p=16F684
+                      00065 #include <p16F684.inc>
+                      00001         LIST
+                      00002 
+                      00003 ;==========================================================================
+                      00004 ; Build date : Nov 22 2017
+                      00005 ;  MPASM PIC16F684 processor include
+                      00006 ; 
+                      00007 ;  (c) Copyright 1999-2017 Microchip Technology, All rights reserved
+                      00008 ;==========================================================================
+                      00009 
+                      00524         LIST
+                      00066     
+Warning[205]: Found directive in column 1. (extern)
+  0000                00067 extern delay10
+                      00068     
+Warning[205]: Found directive in column 1. (errorlevel)
+                      00069 errorlevel -302
+Warning[205]: Found directive in column 1. (errorlevel)
+                      00070 errorlevel -312
+                      00071     
+                      00072 ;*******************************************************************************
+                      00073 ; Configuration Word Setup
+                      00074 ;*******************************************************************************
+                      00075 
+Warning[205]: Found directive in column 1. (__CONFIG)
+2007   30E4           00076 __CONFIG _MCLRE_ON & _CP_OFF & _CPD_OFF & _BOD_OFF & _WDT_OFF & _PWRTE_ON & _INTOSCIO & _FCMEN_OFF & _IE
+                            SO_OFF
+                      00077 
+                      00078 ;*******************************************************************************
+                      00079 ; Variable Definitions
+                      00080 ;*******************************************************************************
+                      00081     
+                      00082 SeqMem UDATA ;Defining the mem that stores the seq of colors
+0000                  00083 seqmem res 25
+                      00084  
+                      00085 GenVars UDATA_SHR ;Defining general vars for the program
+0000                  00086 sm_row res 1
+0001                  00087 sm_column res 1
+0002                  00088 counter res 1
+0003                  00089 counter2 res 1
+0004                  00090 rand res 1
+MPASM 5.77  /USERS/GABRIELMILLER/MICROCHIPPR   6-5-2018  8:55:53         PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0005                  00091 column_count res 1
+0006                  00092 row_count res 1
+0007                  00093 rot_mem res 1
+0008                  00094 sub_var res 1
+0009                  00095 correct res 1
+                      00096  
+Warning[205]: Found directive in column 1. (constant)
+  0019                00097 constant SEQ_SIZE=.25 ;Setting a constant for the max size of the seq
+Warning[205]: Found directive in column 1. (constant)
+  0000                00098 constant RED=b'00' ;Setting a constant for the code for each color
+Warning[205]: Found directive in column 1. (constant)
+  0001                00099 constant BLUE=b'01'
+Warning[205]: Found directive in column 1. (constant)
+  0002                00100 constant YELLOW=b'10'
+Warning[205]: Found directive in column 1. (constant)
+  0003                00101 constant GREEN=b'11'
+                      00102  
+                      00103 ; Pins
+                      00104  
+                      00105 #define RED_B PORTC,4 ;Defining the location of the buttons
+                      00106 #define BLUE_B PORTA,2
+                      00107 #define YELLOW_B PORTA,4
+                      00108 #define GREEN_B PORTA,5
+                      00109  
+                      00110  
+                      00111 #define RED_L b'000001' ;Defininf the location of the LEDs
+                      00112 #define BLUE_L b'000100'
+                      00113 #define YELLOW_L b'001000'
+                      00114 #define GREEN_L b'000010'
+                      00115 
+                      00116 ;*******************************************************************************
+                      00117 ; Reset Vector + RC Cal
+                      00118 ;*******************************************************************************
+                      00119 
+                      00120 RES_VECT  CODE    0x0000            ; processor reset vector
+Warning[203]: Found opcode in column 1. (GOTO)
+0000   2???           00121 GOTO    START                   ; go to beginning of program
+                      00122 
+                      00123 ;*******************************************************************************
+                      00124 ; MAIN PROGRAM
+                      00125 ;*******************************************************************************
+                      00126 
+                      00127 MAIN_PROG CODE                      ; let linker place main program
+                      00128 
+0000                  00129 START
+                      00130 
+0000   1683           00131     banksel TRISC
+0001   30F0           00132     movlw b'11110000' ;Tris PortC
+0002   0087           00133     movwf TRISC
+0003   3007           00134     movlw b'111' ;Turning of analog inputs and comparators
+0004   0099           00135     movwf CMCON0
+0005   0191           00136     clrf ANSEL
+                      00137 
+MPASM 5.77  /USERS/GABRIELMILLER/MICROCHIPPR   6-5-2018  8:55:53         PAGE  4
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0006   1283           00138     banksel PORTC ;Making sure all vars are clear
+0007   0187           00139     clrf PORTC 
+0008   01??           00140     clrf sm_row
+0009   01??           00141     clrf sm_column
+000A   01??           00142     clrf rand
+000B   01??           00143     clrf counter
+000C   01??           00144     clrf counter2
+000D   01??           00145     clrf column_count
+000E   01??           00146     clrf row_count
+000F   01??           00147     clrf rot_mem
+0010   01??           00148     clrf sub_var
+0011   01??           00149     clrf correct
+                      00150     
+0012   ????           00151     banksel seqmem
+0013   30??           00152     movlw seqmem ;Clear seqmem
+0014   0084           00153     movwf FSR
+0015   0180           00154 seq_clr clrf INDF
+0016   0A84           00155     incf FSR,f
+0017   30??           00156     movlw seqmem+SEQ_SIZE
+0018   0604           00157     xorwf FSR,w
+0019   1D03           00158     btfss STATUS,Z
+001A   2???           00159     goto seq_clr
+                      00160     
+001B   3004           00161     movlw (1<<2) ;Turn on TMR2 w/o Post/Prescaling and overflowing on 5
+001C   1283           00162     banksel T2CON
+001D   0092           00163     movwf T2CON
+001E   3003           00164     movlw b'11'
+001F   1683           00165     banksel PR2
+0020   0092           00166     movwf PR2
+                      00167     
+0021   30C4           00168     movlw b'11000100' ;Sets up TMR0 on timer mode with a 1:32 prescale 
+0022   1683           00169     banksel OPTION_REG
+0023   0081           00170     movwf OPTION_REG
+                      00171     
+0024                  00172 main_loop
+0024   1283           00173     banksel PORTA
+0025   1905           00174 start_b btfsc PORTA,2 ;Waiting for blue button to be pressed to start the game
+0026   2???           00175     goto start_b
+                      00176  
+0027                  00177 loop 
+0027   2???           00178     call add_seq ;Adding a new color to the seq
+0028   2???           00179     call display_lights ;Displaying all colors in the seq
+0029   2???           00180     call user_test ;Testing for the correct button presses
+002A   3A01           00181     xorlw .1 ;Checking if right or wrong
+002B   1D03           00182     btfss STATUS,Z
+002C   2???           00183     goto wrong ;Wrong
+002D   0A??           00184     incf correct,f ;Right
+Message[305]: Using default destination of 1 (file).
+002E   08??           00185     movf sm_row ;Checking if the seq is at its max 
+002F   3A19           00186     xorlw SEQ_SIZE 
+0030   1903           00187     btfsc STATUS,Z
+0031   2???           00188     goto wrong
+0032   2???           00189     goto loop
+MPASM 5.77  /USERS/GABRIELMILLER/MICROCHIPPR   6-5-2018  8:55:53         PAGE  5
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0033                  00190 wrong
+0033   1283           00191     banksel PORTC ;Display the lower half of correct
+0034   08??           00192     movf correct,w
+0035   0087           00193     movwf PORTC
+0036   1283           00194     banksel PORTA
+0037   1905           00195 wrong_b btfsc PORTA,2 ;Waiting for blue button to be pressed to flip the halfs of correct
+0038   2???           00196     goto wrong_b
+                      00197     
+0039   0E??           00198     swapf correct,f   
+003A   1D05           00199 wrong_b_up btfss PORTA,2
+003B   2???           00200     goto wrong_b_up
+                      00201     
+003C   2???           00202     goto wrong
+                      00203     
+                      00204 ; Subroutines    
+003D                  00205 add_seq
+003D   1283           00206     banksel TMR2
+003E   0811           00207     movf TMR2,w ;Grabs "random" 2-bit number
+003F   00??           00208     movwf rand
+                      00209     
+0040   08??           00210     movf sm_column,w ;Shifting the rand number to the right column
+0041   1003           00211     bcf STATUS,C
+0042   3A00           00212     xorlw .0
+0043   1903           00213     btfsc STATUS,Z
+0044   2???           00214     goto col0
+0045   08??           00215     movf sm_column,w
+0046   3A01           00216     xorlw .1
+0047   1903           00217     btfsc STATUS,Z
+0048   2???           00218     goto col1
+0049   08??           00219     movf sm_column,w
+004A   3A02           00220     xorlw .2
+004B   1903           00221     btfsc STATUS,Z
+004C   2???           00222     goto col2
+                      00223     
+004D   0D??           00224     rlf rand,f
+004E   0D??           00225     rlf rand,f
+004F   0D??           00226 col2 rlf rand,f
+0050   0D??           00227     rlf rand,f
+0051   0D??           00228 col1 rlf rand,f
+0052   0D??           00229     rlf rand,f
+0053                  00230 col0
+                      00231     
+0053   ????           00232     banksel seqmem ;Moving FSR to the right mem location
+0054   30??           00233     movlw seqmem
+0055   0084           00234     movwf FSR
+0056   08??           00235     movf sm_row,w ;Checking if row is 0
+0057   3A00           00236     xorlw .0
+0058   1903           00237     btfsc STATUS,Z
+0059   2???           00238     goto row_m_end
+005A   08??           00239     movf sm_row,w
+005B   00??           00240     movwf counter
+005C   0A84           00241 row_m incf FSR,f
+005D   0B??           00242     decfsz counter,f
+MPASM 5.77  /USERS/GABRIELMILLER/MICROCHIPPR   6-5-2018  8:55:53         PAGE  6
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+005E   2???           00243     goto row_m
+005F                  00244 row_m_end
+                      00245     
+005F   08??           00246     movf rand,w ;Update row with new data
+0060   0680           00247     xorwf INDF,f
+                      00248     
+0061   0A??           00249     incf sm_column,w ;Inc column, if 5 set 0 and inc row
+0062   3A04           00250     xorlw .4
+0063   1D03           00251     btfss STATUS,Z
+0064   2???           00252     goto inc_not0
+0065   01??           00253     clrf sm_column
+0066   0A??           00254     incf sm_row,f 
+0067   2???           00255     goto inc_0
+0068   0A??           00256 inc_not0 incf sm_column,f
+                      00257     
+0069   3400           00258 inc_0 retlw 0
+                      00259     
+006A                  00260 display_light
+006A   00??           00261     movwf sub_var
+006B   3A00           00262     xorlw RED ;Checking for color code to display
+006C   1903           00263     btfsc STATUS,Z
+006D   2???           00264     goto dis_red
+006E   08??           00265     movf sub_var,w
+006F   3A01           00266     xorlw BLUE
+0070   1903           00267     btfsc STATUS,Z
+0071   2???           00268     goto dis_blue
+0072   08??           00269     movf sub_var,w
+0073   3A02           00270     xorlw YELLOW
+0074   1903           00271     btfsc STATUS,Z
+0075   2???           00272     goto dis_yellow
+0076   08??           00273     movf sub_var,w
+0077   3A03           00274     xorlw GREEN
+0078   1903           00275     btfsc STATUS,Z
+0079   2???           00276     goto dis_green
+007A   2???           00277     goto dis_end
+                      00278     
+Warning[207]: Found label after column 1. (dis_red)
+007B   3001           00279     dis_red movlw RED_L ;Display red
+007C   0087           00280     movwf PORTC
+007D   2???           00281     goto dis_end
+                      00282     
+Warning[207]: Found label after column 1. (dis_blue)
+007E   3004           00283     dis_blue movlw BLUE_L ;Display blue
+007F   0087           00284     movwf PORTC
+0080   2???           00285     goto dis_end
+                      00286     
+Warning[207]: Found label after column 1. (dis_yellow)
+0081   3008           00287     dis_yellow movlw YELLOW_L ;Display yellow
+0082   0087           00288     movwf PORTC
+0083   2???           00289     goto dis_end
+                      00290     
+Warning[207]: Found label after column 1. (dis_green)
+0084   3002           00291     dis_green movlw GREEN_L ;Display green
+MPASM 5.77  /USERS/GABRIELMILLER/MICROCHIPPR   6-5-2018  8:55:53         PAGE  7
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0085   0087           00292     movwf PORTC
+                      00293     
+Warning[207]: Found label after column 1. (dis_end)
+0086   3400           00294     dis_end retlw 0
+                      00295     
+0087                  00296 display_lights
+0087   ????           00297     banksel seqmem ;Point at the start of seqmem
+0088   30??           00298     movlw seqmem
+0089   0084           00299     movwf FSR
+                      00300     
+008A   08??           00301     movf sm_row,w ;Checks if sm_row is zero and skips
+008B   3A00           00302     xorlw .0
+008C   1903           00303     btfsc STATUS,Z
+008D   2???           00304     goto end_row
+008E   00??           00305     movwf row_count
+008F                  00306 row_l ;Displays all rows except for current one
+008F   3004           00307     movlw .4
+0090   00??           00308     movwf counter
+0091   0800           00309     movf INDF,w
+0092   00??           00310     movwf rot_mem
+0093   3003           00311 rowp_l movlw 0x03
+0094   05??           00312     andwf rot_mem,w
+0095   2???           00313     call display_light
+0096   3064           00314     movlw .100
+0097   2???           00315     call delay10
+0098   1283           00316     banksel PORTC
+0099   0187           00317     clrf PORTC
+009A   3019           00318     movlw .25
+009B   2???           00319     call delay10
+009C   0C??           00320     rrf rot_mem,f
+009D   0C??           00321     rrf rot_mem,f
+009E   0B??           00322     decfsz counter,f
+009F   2???           00323     goto rowp_l
+00A0   0A84           00324     incf FSR,f
+00A1   0B??           00325     decfsz row_count,f
+00A2   2???           00326     goto row_l
+00A3                  00327 end_row
+                      00328 
+00A3   08??           00329     movf sm_column,w ;Checks if sm_column is zero and skips
+00A4   3A00           00330     xorlw .0
+00A5   1903           00331     btfsc STATUS,Z
+00A6   2???           00332     goto end_col
+00A7   08??           00333     movf sm_column,w ;Grabs sm_column and current row
+00A8   00??           00334     movwf column_count
+00A9   0800           00335     movf INDF,w
+00AA   00??           00336     movwf rot_mem
+00AB   3003           00337 col_l movlw 0x03 ;Displays light code in last row
+00AC   05??           00338     andwf rot_mem,w
+00AD   2???           00339     call display_light
+00AE   3064           00340     movlw .100
+00AF   2???           00341     call delay10
+00B0   1283           00342     banksel PORTC
+00B1   0187           00343     clrf PORTC
+MPASM 5.77  /USERS/GABRIELMILLER/MICROCHIPPR   6-5-2018  8:55:53         PAGE  8
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+00B2   3019           00344     movlw .25
+00B3   2???           00345     call delay10
+00B4   0C??           00346     rrf rot_mem,f
+00B5   0C??           00347     rrf rot_mem,f
+00B6   0B??           00348     decfsz column_count,f
+00B7   2???           00349     goto col_l
+                      00350     
+00B8   3400           00351 end_col retlw 0
+                      00352     
+00B9                  00353 user_test
+00B9   ????           00354     banksel seqmem ;Point at the start of seqmem
+00BA   30??           00355     movlw seqmem
+00BB   0084           00356     movwf FSR
+                      00357     
+00BC   08??           00358     movf sm_row,w ;Checks if sm_row is zero and skips
+00BD   3A00           00359     xorlw .0
+00BE   1903           00360     btfsc STATUS,Z
+00BF   2???           00361     goto end_row_ut
+00C0   00??           00362     movwf row_count
+00C1                  00363 row_l_ut ;Gets all rows except for current one and test them
+00C1   3004           00364     movlw .4
+00C2   00??           00365     movwf counter2
+00C3   0800           00366     movf INDF,w
+00C4   00??           00367     movwf rot_mem
+00C5   3003           00368 rowp_l_ut movlw 0x03
+00C6   05??           00369     andwf rot_mem,w
+00C7   2???           00370     call user_input
+00C8   3A00           00371     xorlw .0
+00C9   1903           00372     btfsc STATUS,Z
+00CA   2???           00373     goto fail_test
+00CB   0C??           00374     rrf rot_mem,f
+00CC   0C??           00375     rrf rot_mem,f
+00CD   0B??           00376     decfsz counter2,f
+00CE   2???           00377     goto rowp_l_ut
+00CF   0A84           00378     incf FSR,f
+00D0   0B??           00379     decfsz row_count,f
+00D1   2???           00380     goto row_l_ut
+00D2                  00381 end_row_ut
+                      00382 
+00D2   08??           00383     movf sm_column,w ;Checks if sm_column is zero and skips
+00D3   3A00           00384     xorlw .0
+00D4   1903           00385     btfsc STATUS,Z
+00D5   2???           00386     goto end_col_ut
+00D6   08??           00387     movf sm_column,w ;Grabs sm_column and current row
+00D7   00??           00388     movwf column_count
+00D8   0800           00389     movf INDF,w
+00D9   00??           00390     movwf rot_mem
+00DA   3003           00391 col_l_ut movlw 0x03 ;Gets light code in last row and tests
+00DB   05??           00392     andwf rot_mem,w
+00DC   2???           00393     call user_input
+00DD   3A00           00394     xorlw .0
+00DE   1903           00395     btfsc STATUS,Z
+00DF   2???           00396     goto fail_test
+MPASM 5.77  /USERS/GABRIELMILLER/MICROCHIPPR   6-5-2018  8:55:53         PAGE  9
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+00E0   0C??           00397     rrf rot_mem,f
+00E1   0C??           00398     rrf rot_mem,f
+00E2   0B??           00399     decfsz column_count,f
+00E3   2???           00400     goto col_l_ut
+                      00401     
+00E4   3401           00402 end_col_ut retlw 1
+                      00403     
+00E5   3400           00404 fail_test retlw 0
+                      00405     
+00E6                  00406 user_input
+00E6   00??           00407     movwf sub_var
+00E7   0181           00408     clrf TMR0
+00E8   01??           00409     clrf counter
+00E9                  00410 timer_loop ;Counting time while waiting for user input
+00E9   1283           00411     banksel TMR0
+00EA   30FA           00412     movlw .250 ;250 * 32us/tick = 8ms
+00EB   0201           00413     subwf TMR0,w
+00EC   1C03           00414     btfss STATUS,C
+00ED   2???           00415     goto button_test
+00EE   0A??           00416     incf counter,f
+00EF   08??           00417     movf counter,w
+00F0   3A7D           00418     xorlw .125 ;8ms * 125 = 1000ms If timer hits 1 sec fail
+00F1   1903           00419     btfsc STATUS,Z
+00F2   2???           00420     goto fail
+00F3   0181           00421     clrf TMR0
+00F4                  00422 button_test 
+00F4   1283           00423     banksel PORTA ;Test each button for presses
+00F5   1E07           00424     btfss RED_B
+00F6   2???           00425     goto red_t
+00F7   1D05           00426     btfss BLUE_B
+00F8   2???           00427     goto blue_t
+00F9   1E05           00428     btfss YELLOW_B
+00FA   2???           00429     goto yellow_t
+00FB   1E85           00430     btfss GREEN_B
+00FC   2???           00431     goto green_t
+00FD   2???           00432     goto timer_loop
+                      00433     
+00FE                  00434 red_t ;Red test
+00FE   3000           00435     movlw RED
+00FF   06??           00436     xorwf sub_var,w
+0100   1D03           00437     btfss STATUS,Z
+0101   2???           00438     goto fail
+0102   1E07           00439 red_up btfss RED_B
+0103   2???           00440     goto red_up
+0104   3001           00441     movlw .1
+0105   2???           00442     call delay10
+0106   3401           00443     retlw 1
+0107                  00444 blue_t ;Blue test
+0107   3001           00445     movlw BLUE
+0108   06??           00446     xorwf sub_var,w
+0109   1D03           00447     btfss STATUS,Z
+010A   2???           00448     goto fail
+010B   1D05           00449 blue_up btfss BLUE_B
+MPASM 5.77  /USERS/GABRIELMILLER/MICROCHIPPR   6-5-2018  8:55:53         PAGE 10
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+010C   2???           00450     goto blue_up
+010D   3001           00451     movlw .1
+010E   2???           00452     call delay10
+010F   3401           00453     retlw 1
+0110                  00454 yellow_t ;Yellow test
+0110   3002           00455     movlw YELLOW
+0111   06??           00456     xorwf sub_var,w
+0112   1D03           00457     btfss STATUS,Z
+0113   2???           00458     goto fail
+0114   1E05           00459 yellow_up btfss YELLOW_B
+0115   2???           00460     goto yellow_up
+0116   3001           00461     movlw .1
+0117   2???           00462     call delay10
+0118   3401           00463     retlw 1
+0119                  00464 green_t ;Green test
+0119   3003           00465     movlw GREEN
+011A   06??           00466     xorwf sub_var,w
+011B   1D03           00467     btfss STATUS,Z
+011C   2???           00468     goto fail
+011D   1E85           00469 green_up btfss GREEN_B
+011E   2???           00470     goto green_up
+011F   3001           00471     movlw .1
+0120   2???           00472     call delay10
+0121   3401           00473     retlw 1
+                      00474 
+0122                  00475 fail
+0122   3400           00476     retlw 0
+                      00477     
+30E4                  00478     END
+MPASM 5.77  /USERS/GABRIELMILLER/MICROCHIPPR   6-5-2018  8:55:53         PAGE 11
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+ADCON0                            0000001F
+ADCON1                            0000009F
+ADCS0                             00000004
+ADCS1                             00000005
+ADCS2                             00000006
+ADFM                              00000007
+ADIE                              00000006
+ADIF                              00000006
+ADON                              00000000
+ADRESH                            0000001E
+ADRESL                            0000009E
+ANS0                              00000000
+ANS1                              00000001
+ANS2                              00000002
+ANS3                              00000003
+ANS4                              00000004
+ANS5                              00000005
+ANS6                              00000006
+ANS7                              00000007
+ANSEL                             00000091
+BLUE                              00000001
+BLUE_B                            PORTA,2
+BLUE_L                            b'000100'
+C                                 00000000
+C1IE                              00000003
+C1IF                              00000003
+C1INV                             00000004
+C1OUT                             00000006
+C2IE                              00000004
+C2IF                              00000004
+C2INV                             00000005
+C2OUT                             00000007
+C2SYNC                            00000000
+CCP1CON                           00000015
+CCP1IE                            00000005
+CCP1IF                            00000005
+CCP1M0                            00000000
+CCP1M1                            00000001
+CCP1M2                            00000002
+CCP1M3                            00000003
+CCPR1                             00000013
+CCPR1H                            00000014
+CCPR1L                            00000013
+CHS0                              00000002
+CHS1                              00000003
+CHS2                              00000004
+CIS                               00000003
+CM0                               00000000
+CM1                               00000001
+CM2                               00000002
+CMCON0                            00000019
+CMCON1                            0000001A
+DC                                00000001
+MPASM 5.77  /USERS/GABRIELMILLER/MICROCHIPPR   6-5-2018  8:55:53         PAGE 12
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+DC1B0                             00000004
+DC1B1                             00000005
+ECCPAS                            00000017
+ECCPAS0                           00000004
+ECCPAS1                           00000005
+ECCPAS2                           00000006
+ECCPASE                           00000007
+ECCPIE                            00000005
+ECCPIF                            00000005
+EEADR                             0000009B
+EECON1                            0000009C
+EECON2                            0000009D
+EEDAT                             0000009A
+EEDATA                            0000009A
+EEIE                              00000007
+EEIF                              00000007
+F                                 00000001
+FSR                               00000004
+GIE                               00000007
+GO                                00000001
+GO_DONE                           00000001
+GO_NOT_DONE                       00000001
+GREEN                             00000003
+GREEN_B                           PORTA,5
+GREEN_L                           b'000010'
+HTS                               00000002
+INDF                              00000000
+INTCON                            0000000B
+INTE                              00000004
+INTEDG                            00000006
+INTF                              00000001
+IOC                               00000096
+IOC0                              00000000
+IOC1                              00000001
+IOC2                              00000002
+IOC3                              00000003
+IOC4                              00000004
+IOC5                              00000005
+IOCA                              00000096
+IOCA0                             00000000
+IOCA1                             00000001
+IOCA2                             00000002
+IOCA3                             00000003
+IOCA4                             00000004
+IOCA5                             00000005
+IRCF0                             00000004
+IRCF1                             00000005
+IRCF2                             00000006
+IRP                               00000007
+LTS                               00000001
+NOT_BOD                           00000000
+NOT_BOR                           00000000
+NOT_DONE                          00000001
+MPASM 5.77  /USERS/GABRIELMILLER/MICROCHIPPR   6-5-2018  8:55:53         PAGE 13
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+NOT_PD                            00000003
+NOT_POR                           00000001
+NOT_RAPU                          00000007
+NOT_T1SYNC                        00000002
+NOT_TO                            00000004
+OPTION_REG                        00000081
+OSCCON                            0000008F
+OSCTUNE                           00000090
+OSFIE                             00000002
+OSFIF                             00000002
+OSTS                              00000003
+P1M0                              00000006
+P1M1                              00000007
+PCL                               00000002
+PCLATH                            0000000A
+PCON                              0000008E
+PDC0                              00000000
+PDC1                              00000001
+PDC2                              00000002
+PDC3                              00000003
+PDC4                              00000004
+PDC5                              00000005
+PDC6                              00000006
+PEIE                              00000006
+PIE1                              0000008C
+PIR1                              0000000C
+PORTA                             00000005
+PORTC                             00000007
+PR2                               00000092
+PRSEN                             00000007
+PS0                               00000000
+PS1                               00000001
+PS2                               00000002
+PSA                               00000003
+PSSAC0                            00000002
+PSSAC1                            00000003
+PSSBD0                            00000000
+PSSBD1                            00000001
+PWM1CON                           00000016
+RA0                               00000000
+RA1                               00000001
+RA2                               00000002
+RA3                               00000003
+RA4                               00000004
+RA5                               00000005
+RAIE                              00000003
+RAIF                              00000000
+RC0                               00000000
+RC1                               00000001
+RC2                               00000002
+RC3                               00000003
+RC4                               00000004
+RC5                               00000005
+MPASM 5.77  /USERS/GABRIELMILLER/MICROCHIPPR   6-5-2018  8:55:53         PAGE 14
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+RD                                00000000
+RED                               00000000
+RED_B                             PORTC,4
+RED_L                             b'000001'
+RP0                               00000005
+RP1                               00000006
+SBODEN                            00000004
+SBOREN                            00000004
+SCS                               00000000
+SEQ_SIZE                          00000019
+START                             00000000
+STATUS                            00000003
+SWDTEN                            00000000
+T0CS                              00000005
+T0IE                              00000005
+T0IF                              00000002
+T0SE                              00000004
+T1CKPS0                           00000004
+T1CKPS1                           00000005
+T1CON                             00000010
+T1GINV                            00000007
+T1GSS                             00000001
+T1IE                              00000000
+T1IF                              00000000
+T1OSCEN                           00000003
+T2CKPS0                           00000000
+T2CKPS1                           00000001
+T2CON                             00000012
+T2IE                              00000001
+T2IF                              00000001
+TMR0                              00000001
+TMR0IE                            00000005
+TMR0IF                            00000002
+TMR1                              0000000E
+TMR1CS                            00000001
+TMR1GE                            00000006
+TMR1H                             0000000F
+TMR1IE                            00000000
+TMR1IF                            00000000
+TMR1L                             0000000E
+TMR1ON                            00000000
+TMR2                              00000011
+TMR2IE                            00000001
+TMR2IF                            00000001
+TMR2ON                            00000002
+TOUTPS0                           00000003
+TOUTPS1                           00000004
+TOUTPS2                           00000005
+TOUTPS3                           00000006
+TRISA                             00000085
+TRISA0                            00000000
+TRISA1                            00000001
+TRISA2                            00000002
+MPASM 5.77  /USERS/GABRIELMILLER/MICROCHIPPR   6-5-2018  8:55:53         PAGE 15
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+TRISA3                            00000003
+TRISA4                            00000004
+TRISA5                            00000005
+TRISC                             00000087
+TRISC0                            00000000
+TRISC1                            00000001
+TRISC2                            00000002
+TRISC3                            00000003
+TRISC4                            00000004
+TRISC5                            00000005
+TUN0                              00000000
+TUN1                              00000001
+TUN2                              00000002
+TUN3                              00000003
+TUN4                              00000004
+ULPWUE                            00000005
+VCFG                              00000006
+VR0                               00000000
+VR1                               00000001
+VR2                               00000002
+VR3                               00000003
+VRCON                             00000099
+VREN                              00000007
+VRR                               00000005
+W                                 00000000
+WDTCON                            00000018
+WDTPS0                            00000001
+WDTPS1                            00000002
+WDTPS2                            00000003
+WDTPS3                            00000004
+WPU                               00000095
+WPU0                              00000000
+WPU1                              00000001
+WPU2                              00000002
+WPU4                              00000004
+WPU5                              00000005
+WPUA                              00000095
+WPUA0                             00000000
+WPUA1                             00000001
+WPUA2                             00000002
+WPUA4                             00000004
+WPUA5                             00000005
+WR                                00000001
+WREN                              00000002
+WRERR                             00000003
+YELLOW                            00000002
+YELLOW_B                          PORTA,4
+YELLOW_L                          b'001000'
+Z                                 00000002
+_BOD_NSLEEP                       00003EFF
+_BOD_OFF                          00003CFF
+_BOD_ON                           00003FFF
+_BOD_SBODEN                       00003DFF
+MPASM 5.77  /USERS/GABRIELMILLER/MICROCHIPPR   6-5-2018  8:55:53         PAGE 16
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+_BOREN_NSLEEP                     00003EFF
+_BOREN_OFF                        00003CFF
+_BOREN_ON                         00003FFF
+_BOREN_SBODEN                     00003DFF
+_CONFIG                           00002007
+_CPD_OFF                          00003FFF
+_CPD_ON                           00003F7F
+_CP_OFF                           00003FFF
+_CP_ON                            00003FBF
+_DEVID1                           00002006
+_EC_OSC                           00003FFB
+_EXTRC                            00003FFF
+_EXTRCIO                          00003FFE
+_EXTRC_OSC_CLKOUT                 00003FFF
+_EXTRC_OSC_NOCLKOUT               00003FFE
+_FCMEN_OFF                        000037FF
+_FCMEN_ON                         00003FFF
+_FOSC_EC                          00003FFB
+_FOSC_EXTRCCLK                    00003FFF
+_FOSC_EXTRCIO                     00003FFE
+_FOSC_HS                          00003FFA
+_FOSC_INTOSCCLK                   00003FFD
+_FOSC_INTOSCIO                    00003FFC
+_FOSC_LP                          00003FF8
+_FOSC_XT                          00003FF9
+_HS_OSC                           00003FFA
+_IDLOC0                           00002000
+_IDLOC1                           00002001
+_IDLOC2                           00002002
+_IDLOC3                           00002003
+_IESO_OFF                         00003BFF
+_IESO_ON                          00003FFF
+_INTOSC                           00003FFD
+_INTOSCIO                         00003FFC
+_INTRC_OSC_CLKOUT                 00003FFD
+_INTRC_OSC_NOCLKOUT               00003FFC
+_LP_OSC                           00003FF8
+_MCLRE_OFF                        00003FDF
+_MCLRE_ON                         00003FFF
+_PWRTE_OFF                        00003FFF
+_PWRTE_ON                         00003FEF
+_WDTE_OFF                         00003FF7
+_WDTE_ON                          00003FFF
+_WDT_OFF                          00003FF7
+_WDT_ON                           00003FFF
+_XT_OSC                           00003FF9
+__16F684                          00000001
+add_seq                           0000003D
+blue_t                            00000107
+blue_up                           0000010B
+button_test                       000000F4
+col0                              00000053
+col1                              00000051
+MPASM 5.77  /USERS/GABRIELMILLER/MICROCHIPPR   6-5-2018  8:55:53         PAGE 17
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+col2                              0000004F
+col_l                             000000AB
+col_l_ut                          000000DA
+column_count                      00000005
+correct                           00000009
+counter                           00000002
+counter2                          00000003
+delay10                           00000000
+dis_blue                          0000007E
+dis_end                           00000086
+dis_green                         00000084
+dis_red                           0000007B
+dis_yellow                        00000081
+display_light                     0000006A
+display_lights                    00000087
+end_col                           000000B8
+end_col_ut                        000000E4
+end_row                           000000A3
+end_row_ut                        000000D2
+fail                              00000122
+fail_test                         000000E5
+green_t                           00000119
+green_up                          0000011D
+inc_0                             00000069
+inc_not0                          00000068
+loop                              00000027
+main_loop                         00000024
+rand                              00000004
+red_t                             000000FE
+red_up                            00000102
+rot_mem                           00000007
+row_count                         00000006
+row_l                             0000008F
+row_l_ut                          000000C1
+row_m                             0000005C
+row_m_end                         0000005F
+rowp_l                            00000093
+rowp_l_ut                         000000C5
+seq_clr                           00000015
+seqmem                            00000000
+sm_column                         00000001
+sm_row                            00000000
+start_b                           00000025
+sub_var                           00000008
+timer_loop                        000000E9
+user_input                        000000E6
+user_test                         000000B9
+wrong                             00000033
+wrong_b                           00000037
+wrong_b_up                        0000003A
+yellow_t                          00000110
+yellow_up                         00000114
+
+MPASM 5.77  /USERS/GABRIELMILLER/MICROCHIPPR   6-5-2018  8:55:53         PAGE 18
+
+
+
+
+
+Errors   :     0
+Warnings :    16 reported,     0 suppressed
+Messages :     1 reported,     4 suppressed
+
+

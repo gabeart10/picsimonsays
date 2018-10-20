@@ -1,0 +1,4 @@
+Warning[205] /Users/gabrielmiller/microchipProjects/midrangeAsm/SimonSays.X/delay10.asm 11 : Found directive in column 1. (GLOBAL)
+Warning[207] /Users/gabrielmiller/microchipProjects/midrangeAsm/SimonSays.X/delay10.asm 24 : Found label after column 1. (dly2)
+Warning[207] /Users/gabrielmiller/microchipProjects/midrangeAsm/SimonSays.X/delay10.asm 27 : Found label after column 1. (dly1)
+Warning[205] /Users/gabrielmiller/microchipProjects/midrangeAsm/SimonSays.X/delay10.asm 37 : Found directive in column 1. (END)
